@@ -1,8 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+
+from flask import Flask, render_template, request, redirect, url_for, session,jsonify
+
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
+import requests
 
 app = Flask(__name__)
+
+#API settings
+API_URL = 'https://api.calorieninjas.com/v1/nutrition?query='
+API_KEY = 'Mg32i8it134/WHBsJ/BNMw==VzPRDn8ISb0n1GPZ'
+
 app.secret_key = 'pusheen'
 
 # db conncetion 
@@ -60,21 +68,67 @@ def signin():
 
 @app.route('/nutrition_diary', methods=['GET', 'POST'])
 def nutrition_diary():
+
+    # Initialize an empty list for entries
+    entries = []
+
+    if request.method == 'POST':
+        # Get the food item from the form
+        food_item = request.form.get("food-item")
+        
+        # Make the API call
+        response = requests.get(
+            f"{API_URL}?query={food_item}",
+            headers={'X-Api-Key': API_KEY}
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            # Assuming the first item in the response is what we want
+            if data['items']:
+                item_data = data['items'][0]
+                calories = item_data['calories']
+                
+                # Create an entry to insert into the database
+                entry = {
+                    "user_id": session['user_id'],
+                    "food_item": food_item,
+                    "calories": calories,
+                    "date": request.form.get("date")
+                    # Add more fields from item_data if necessary
+                }
+                db.nutrition.insert_one(entry)
+            else:
+                pass
+        else:
+            # Handle error from API
+            print(f"Error: {response.status_code}, {response.text}")
+    # historical data from MongoDB
+    entries = db.nutrition.find().sort("date", -1)  # Sort by date descending
+    return render_template('nutrition-diary.html', entries=entries)
+
     if 'user_id' not in session:
         return redirect(url_for('signin'))  # Redirect to sign-in if not logged in
 
-    if request.method == 'POST':
-        entry = {
-            "user_id": session['user_id'],
-            "food_item": request.form.get("food-item"),
-            "calories": request.form.get("calories"),
-            "date": request.form.get("date")
-        }
-        db.nutrition.insert_one(entry)
 
-    entries = db.nutrition.find({"user_id": session['user_id']}).sort("date", -1)
-    return render_template('nutrition_diary.html', entries=entries)
-
+@app.route('/get-nutrition', methods=['POST'])
+def get_nutrition():
+    data = request.get_json()
+    food_item = data['food_item']
+    
+    # Make the API call
+    response = requests.get(
+        'https://api.calorieninjas.com/v1/nutrition',
+        headers={'X-Api-Key': API_KEY},
+        params={'query': food_item}
+    )
+    
+    if response.status_code == 200:
+        # Pass the API response as JSON back to the front-end
+        return jsonify(response.json())
+    else:
+        # Handle any error that occurred during the API call
+        return jsonify({'error': 'Could not retrieve nutrition data'}), response.status_code
 
 
 if __name__ == '__main__':

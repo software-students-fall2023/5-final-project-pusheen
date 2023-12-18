@@ -1,29 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Nutrition Diary - FitWell Tracker</title>
+    <meta charset="UTF-8">
+    <title>Nutrition Information</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             color: #333;
         }
-
         .container {
-            width: 80%;
+            width: 100%;
             margin: auto;
             overflow: hidden;
         }
-
-        header, footer {
-            background-color: #008CBA;
-            color: white;
-            padding: 10px 0;
-            text-align: center;
-        }
-
         form {
             background: white;
             padding: 20px;
@@ -31,56 +24,30 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"], input[type="number"], input[type="date"] {
-            width: 100%;
+        input[type="text"] {
+            width: calc(100% - 22px);
             padding: 10px;
-            margin: 5px 0 15px;
+            margin-bottom: 10px;
             border: 1px solid #ddd;
-            box-sizing: border-box;
             border-radius: 4px;
         }
-
         button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #008cba;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
-
         button:hover {
-            background-color: #45a049;
+            background-color: #006c8b;
         }
-
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
+        #nutrition-results {
+            background-color: #e2e2e2;
             padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f4f4f4;
+            margin-top: 20px;
+            display: none;
         }
 
         .signout-button {
@@ -101,51 +68,55 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1>Nutrition Diary</h1>
-    </header>
 
-    <form action="/signout" method="POST">
-        <button type="submit" class="signout-button">Sign Out</button>
-    </form>
-    
-    
     <div class="container">
-        <form method="POST" action="/nutrition_diary">
-            <div class="form-group">
-                <label for="food-item">Food Item:</label>
-                <input type="text" id="food-item" name="food-item" required>
-            </div>
-            <div class="form-group">
-                <label for="calories">Calories:</label>
-                <input type="number" id="calories" name="calories" required>
-            </div>
-            <div class="form-group">
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date" required>
-            </div>
-            <button type="submit">Add Entry</button>
-        </form>
+        <h1>Nutrition Information</h1>
+        <form id="food-form">
+            <input type="text" id="food-item" placeholder="Enter food item" required>
+            <button type="button" id="get-nutrition">Get Nutrition Info</button>
 
-        <!-- This section will display the historical data -->
-        <table>
-            <tr>
-                <th>Date</th>
-                <th>Food Item</th>
-                <th>Calories</th>
-            </tr>
-            {% for entry in entries %}
-            <tr>
-                <td>{{ entry['date'] }}</td>
-                <td>{{ entry['food_item'] }}</td>
-                <td>{{ entry['calories'] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        </form>
+        
+        <div id="nutrition-results">
+            <h2>Results:</h2>
+            <p>Calories: <span id="calories">-</span></p>
+            <p>Protein (g): <span id="protein">-</span></p>
+            <p>Fat (g): <span id="fat">-</span></p>
+            <p>Carbohydrates (g): <span id="carbohydrates">-</span></p>
+            <!-- Add more fields as necessary -->
+        </div>
     </div>
 
-    <footer>
-        <p>FitWell Tracker &copy; 2023</p>
-    </footer>
+    <script>
+        $(document).ready(function() {
+            $('#get-nutrition').on('click', function() {
+                var foodItem = $('#food-item').val();
+                $.ajax({
+                    method: 'POST',
+                    url: '/get-nutrition', // Make sure this matches your Flask route
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify({ 'food_item': foodItem }),
+                    dataType: 'json',
+                    success: function(response) {
+                        // Assuming the API returns an array of items and you want the first one
+                        if (response.items && response.items.length > 0) {
+                            var item = response.items[0];
+                            $('#calories').text(item.calories);
+                            $('#protein').text(item.protein_g);
+                            $('#fat').text(item.fat_total_g);
+                            $('#carbohydrates').text(item.carbohydrates_total_g);
+                            $('#nutrition-results').show();
+                        } else {
+                            alert('No nutritional data found for this food item.');
+                        }
+                    },
+                    error: function(error) {
+                        alert('Error retrieving nutrition data. Please try again.');
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
