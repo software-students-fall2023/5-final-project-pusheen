@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.secret_key = 'pusheen'
 
 # db conncetion 
 client = MongoClient("mongodb://localhost:27017/")
@@ -11,6 +12,12 @@ db = client['fitness_app']
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/signout', methods=['POST'])
+def signout():
+    session.clear()  # Clears the session, effectively signing the user out
+    return redirect(url_for('index'))
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -38,31 +45,36 @@ def signin():
         
         # finding user by user name 
         user = db.users.find_one({"username": username})
+        
 
         if user and check_password_hash(user['password'], password):
-            # auth successf
-            return redirect(url_for('index'))  # Redirect to a different page after login
+            session['user_id'] = str(user['_id'])  # Store user_id in session
+            return redirect(url_for('nutrition_diary'))  # Redirect to Nutrition Diary
+
         else:
             # Authentication failed
             return "Invalid credentials", 401
 
     return render_template('signin.html')
 
-@app.route('/nutrition-diary', methods=['GET', 'POST'])
+
+@app.route('/nutrition_diary', methods=['GET', 'POST'])
 def nutrition_diary():
+    if 'user_id' not in session:
+        return redirect(url_for('signin'))  # Redirect to sign-in if not logged in
+
     if request.method == 'POST':
-        # Extract data from the form
         entry = {
+            "user_id": session['user_id'],
             "food_item": request.form.get("food-item"),
             "calories": request.form.get("calories"),
             "date": request.form.get("date")
         }
-        # data insertion 
         db.nutrition.insert_one(entry)
 
-    # historical data from MongoDB
-    entries = db.nutrition.find().sort("date", -1)  # Sort by date descending
-    return render_template('nutrition-diary.html', entries=entries)
+    entries = db.nutrition.find({"user_id": session['user_id']}).sort("date", -1)
+    return render_template('nutrition_diary.html', entries=entries)
+
 
 
 if __name__ == '__main__':
