@@ -76,7 +76,7 @@ def signin():
 
         if user and check_password_hash(user['password'], password):
             session['user_id'] = str(user['_id'])  # Store user_id in session
-            return redirect(url_for('nutrition_diary'))  # Redirect to Nutrition Diary
+            return redirect(url_for('nutrition_tracker'))  # Redirect to Nutrition Diary
 
         else:
             # Authentication failed
@@ -84,6 +84,22 @@ def signin():
 
     return render_template('signin.html')
 
+@app.route('/nutrition_tracker', methods=['GET', 'POST'])
+def nutrition_tracker():
+    if 'user_id' not in session:
+        return redirect(url_for('signin'))  # Redirect to sign-in if not logged in
+
+    if request.method == 'POST':
+        entry = {
+            "user_id": session['user_id'],
+            "food_item": request.form.get("food-item"),
+            "calories": request.form.get("calories"),
+            "date": request.form.get("date")
+        }
+        db.nutrition.insert_one(entry)
+
+    entries = db.nutrition.find({"user_id": session['user_id']}).sort("date", -1)
+    return render_template('nutrition_tracker.html', entries=entries)
 
 @app.route('/nutrition_diary', methods=['GET', 'POST'])
 def nutrition_diary():
@@ -124,7 +140,7 @@ def nutrition_diary():
             print(f"Error: {response.status_code}, {response.text}")
     # historical data from MongoDB
     entries = db.nutrition.find().sort("date", -1)  # Sort by date descending
-    return render_template('nutrition-diary.html', entries=entries)
+    return render_template('nutrition_diary.html', entries=entries)
 
     if 'user_id' not in session:
         return redirect(url_for('signin'))  # Redirect to sign-in if not logged in
