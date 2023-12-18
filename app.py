@@ -1,12 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for,jsonify
+
+from flask import Flask, render_template, request, redirect, url_for, session,jsonify
+
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 
 app = Flask(__name__)
+
 #API settings
 API_URL = 'https://api.calorieninjas.com/v1/nutrition?query='
 API_KEY = 'Mg32i8it134/WHBsJ/BNMw==VzPRDn8ISb0n1GPZ'
+
+app.secret_key = 'pusheen'
+
 # db conncetion 
 client = MongoClient("mongodb://localhost:27017/")
 db = client['fitness_app']
@@ -14,6 +20,12 @@ db = client['fitness_app']
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/signout', methods=['POST'])
+def signout():
+    session.clear()  # Clears the session, effectively signing the user out
+    return redirect(url_for('index'))
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -41,18 +53,22 @@ def signin():
         
         # finding user by user name 
         user = db.users.find_one({"username": username})
+        
 
         if user and check_password_hash(user['password'], password):
-            # auth successf
-            return redirect(url_for('index'))  # Redirect to a different page after login
+            session['user_id'] = str(user['_id'])  # Store user_id in session
+            return redirect(url_for('nutrition_diary'))  # Redirect to Nutrition Diary
+
         else:
             # Authentication failed
             return "Invalid credentials", 401
 
     return render_template('signin.html')
 
-@app.route('/nutrition-diary', methods=['GET', 'POST'])
+
+@app.route('/nutrition_diary', methods=['GET', 'POST'])
 def nutrition_diary():
+
     # Initialize an empty list for entries
     entries = []
 
@@ -90,6 +106,10 @@ def nutrition_diary():
     # historical data from MongoDB
     entries = db.nutrition.find().sort("date", -1)  # Sort by date descending
     return render_template('nutrition-diary.html', entries=entries)
+
+    if 'user_id' not in session:
+        return redirect(url_for('signin'))  # Redirect to sign-in if not logged in
+
 
 @app.route('/get-nutrition', methods=['POST'])
 def get_nutrition():
