@@ -82,15 +82,52 @@
         th {
             background-color: #f4f4f4;
         }
+
+        .signout-button {
+    background-color: #f44336; /* Red color */
+    color: white;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+    
+.signout-button:hover {
+    background-color: #d32f2f; 
+}
+
     </style>
 </head>
 <body>
+<<<<<<< Updated upstream
     <header>
         <h1>Nutrition Diary</h1>
     </header>
 
     <div class="container">
         <form method="POST" action="/nutrition-diary">
+=======
+<<<<<<< HEAD
+    <div class="container">
+        <h1>Nutrition Information</h1>
+        <form id="food-form">
+            <input type="text" id="food-item" placeholder="Enter food item" required>
+            <button type="button" id="get-nutrition">Get Nutrition Info</button>
+=======
+    <header>
+        <h1>Nutrition Diary</h1>
+    </header>
+
+    <form action="/signout" method="POST">
+        <button type="submit" class="signout-button">Sign Out</button>
+    </form>
+    
+    
+    <div class="container">
+        <form method="POST" action="/nutrition_diary">
+>>>>>>> Stashed changes
             <div class="form-group">
                 <label for="food-item">Food Item:</label>
                 <input type="text" id="food-item" name="food-item" required>
@@ -104,6 +141,10 @@
                 <input type="date" id="date" name="date" required>
             </div>
             <button type="submit">Add Entry</button>
+<<<<<<< Updated upstream
+=======
+>>>>>>> fe8c917bcc5fce23c157a20f127669d13b58657e
+>>>>>>> Stashed changes
         </form>
 
         <!-- This section will display the historical data -->
