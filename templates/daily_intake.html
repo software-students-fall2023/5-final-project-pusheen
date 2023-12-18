@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily Intake - Nutrition Tracker</title>
+    <style>
+        body, html 
+        {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+
+        .add-container 
+        {
+            max-width: 340px;
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            margin: 60px auto;
+        }
+
+        form 
+        {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 
+        {
+            color: #333;
+        }
+
+
+    </style>
+</head>
+<body>
+
+
+    <nav>
+        <a href="#" class="logo"> Nutrifit </a>
+        <ul>
+            <li><a href="{{ url_for('landing')}}">Home</a></li>
+        </ul>
+    </nav>
+
+
+    <div class="add-container">
+        <h1>Daily Intake</h1>
+            
+    
+            <section style="text-align: center; margin: 30px 0;">
+            
+                <a href="add_weight.html" target="_blank">
+                    <button style="background-color: pink; color: white;">Add Weight</button>
+                </a>
+                <a href="add_water.html" target="_blank">
+                    <button style="background-color: pink; color: white;">Add Water</button>
+                </a>
+                <a href="add_breakfast.html" target="_blank">
+                    <button style="background-color: pink; color: white;">Add Breakfast</button>
+                </a>
+                <a href="add_lunch.html" target="_blank">
+                    <button style="background-color: pink; color: white;">Add Lunch</button>
+                </a>
+                <a href="add_dinner.html" target="_blank">
+                    <button style="background-color: pink; color: white;">Add Dinner</button>
+                </a>
+                <a href="add_snack.html" target="_blank">
+                    <button style="background-color: pink; color: white;">Add Snack</button>
+                </a>
+            </section>
+    
+    </div>
+
+
+   
+</body>
+</html>

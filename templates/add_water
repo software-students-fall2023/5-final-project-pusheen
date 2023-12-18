@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Water</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+
+
+    <style>
+        /* Base Styles */
+        body, html {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+        }
+
+        .add_water-container 
+        {
+            width: 100%;
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            overflow: hidden;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        input[type=date], input[type=number] 
+        {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type=submit] 
+        {
+            width: 100%;
+            background-color: #3682c9;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        input[type=submit]:hover 
+        {
+            background-color: #3682c9;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="#" class="logo"> Nutrifit </a>
+        <ul>
+            <li><a href="{{ url_for('daily_intake')}}">Cancel</a></li>
+        </ul>
+    </nav>
+
+    <!-- Add Water Container -->
+    <section style="padding: 50px 0; text-align: center;">
+        <div class="add_water-container" style="max-width: 380px; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); margin: 0 auto;">
+            <h1>Add water</h1>
+            <form action="/add_water" method="POST" style="text-align: left;">
+
+                <label for="water">Add Water (oz.):</label>
+                Add Water: <input type="number" id="water" name="water"><br>
+
+            </form>
+            {% if error %}
+                <p style="color: red; font-weight: bold;">{{ error }}</p>
+            {% endif %}
+        </div>
+    </section>
+</body>
+
+</html>

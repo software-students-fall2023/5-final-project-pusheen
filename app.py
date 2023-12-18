@@ -1,9 +1,11 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session,jsonify
-
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
+from bson import ObjectId
 
 app = Flask(__name__)
 
@@ -14,8 +16,25 @@ API_KEY = 'Mg32i8it134/WHBsJ/BNMw==VzPRDn8ISb0n1GPZ'
 app.secret_key = 'pusheen'
 
 # db conncetion 
-client = MongoClient("mongodb://localhost:27017/")
-db = client['fitness_app']
+uri = "mongodb+srv://Anjahebi:<password>@pusheenswe.dblujvp.mongodb.net/?retryWrites=true&w=majority"
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
+
+#client = MongoClient("mongodb://localhost:27017/")
+db = client['HealthApp']
+
+
+users = db["UserData"]
+intake = db["DailyIntake"]
+
+
+
 
 @app.route('/')
 def index():
@@ -129,6 +148,109 @@ def get_nutrition():
     else:
         # Handle any error that occurred during the API call
         return jsonify({'error': 'Could not retrieve nutrition data'}), response.status_code
+
+
+
+@app.route('/daily_intake')
+def daily_intake():
+    user_id = session.get('user_id')
+    if not user_id:
+        # Not logged in, redirect to signin page
+        return redirect(url_for('signin'))
+
+    user_doc = users.find_one({"_id": ObjectId(user_id)})
+    if not user_doc:
+        # User not found, clear the session and redirect to login
+        session.clear()
+        return redirect(url_for('signin'))
+    return render_template('daily_intake.html')
+
+
+@app.route('/add_weight', methods=['GET','POST'])
+def add_weight():
+    user_id = session.get('user_id')
+    if request.method == 'POST':
+        weight = request.form.get('weight')
+
+        if users.find_one({"_id": ObjectId(user_id)}):
+            intake.insert_one({
+            "weight": weight
+                })
+         
+        return redirect(url_for('index'))
+    return render_template('add_weight.html')
+
+
+@app.route('/add_water', methods=['GET','POST'])
+def add_water():
+    user_id = session.get('user_id')
+    if request.method == 'POST':
+        water = request.form.get('water')
+
+        if users.find_one({"_id": ObjectId(user_id)}):
+            intake.insert_one({
+                    "water": []
+                    })
+         
+        return redirect(url_for('index'))
+    return render_template('add_water.html')
+
+@app.route('/add_breakfast', methods=['GET','POST'])
+def add_breakfast():
+    user_id = session.get('user_id')
+    if request.method == 'POST':
+        breakfast = request.form.get('breakfast')
+
+        if users.find_one({"_id": ObjectId(user_id)}):
+            intake.insert_one({
+                    "breakfast": []
+                    })
+         
+        return redirect(url_for('index'))
+    return render_template('add_breakfast.html')
+
+@app.route('/add_lunch', methods=['GET','POST'])
+def add_lunch():
+    user_id = session.get('user_id')
+    if request.method == 'POST':
+        lunch = request.form.get('lunch')
+
+        if users.find_one({"_id": ObjectId(user_id)}):
+            intake.insert_one({
+                    "lunch": []
+                    })
+         
+        return redirect(url_for('index'))
+    return render_template('add_lunch.html')
+
+@app.route('/add_dinner', methods=['GET','POST'])
+def add_dinner():
+    user_id = session.get('user_id')
+    if request.method == 'POST':
+        dinner = request.form.get('dinner')
+
+        if users.find_one({"_id": ObjectId(user_id)}):
+            intake.insert_one({
+                    "dinner": []
+                    })
+         
+        return redirect(url_for('index'))
+    return render_template('add_dinner.html')
+
+
+@app.route('/add_snack', methods=['GET','POST'])
+def add_snack():
+    user_id = session.get('user_id')
+    if request.method == 'POST':
+        snack = request.form.get('snack')
+
+        if users.find_one({"_id": ObjectId(user_id)}):
+            intake.insert_one({
+                    "snack": []
+                    })
+         
+        return redirect(url_for('index'))
+    return render_template('add_snack.html')
 
 
 if __name__ == '__main__':
