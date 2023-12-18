@@ -82,6 +82,22 @@
         th {
             background-color: #f4f4f4;
         }
+
+        .signout-button {
+    background-color: #f44336; /* Red color */
+    color: white;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+    
+.signout-button:hover {
+    background-color: #d32f2f; 
+}
+
     </style>
 </head>
 <body>
@@ -89,8 +105,13 @@
         <h1>Nutrition Diary</h1>
     </header>
 
+    <form action="/signout" method="POST">
+        <button type="submit" class="signout-button">Sign Out</button>
+    </form>
+    
+    
     <div class="container">
-        <form method="POST" action="/nutrition-diary">
+        <form method="POST" action="/nutrition_diary">
             <div class="form-group">
                 <label for="food-item">Food Item:</label>
                 <input type="text" id="food-item" name="food-item" required>
