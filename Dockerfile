@@ -1,24 +1,20 @@
+# Use an official Python runtime as a parent image
+FROM python:3.8-slim
 
-FROM python:3.8
+# Set the working directory in the container
+WORKDIR /usr/src/app
 
-WORKDIR /app
+# Copy the current directory contents into the container at /usr/src/app
+COPY . .
 
-
-COPY . /app
-
-# Install the dependencies
+# Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-
+# Make port 5000 available to the world outside this container
 EXPOSE 5000
 
-
+# Define environment variable
 ENV NAME World
 
 # Run app.py when the container launches
 CMD ["python", "app.py"]
-
-
-# docker build -t alh8007/flaskapp .
-# docker run -p 5000:5000 alh8007/flaskapp
-
