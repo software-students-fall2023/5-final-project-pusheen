@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | NutriFit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+ <style>
+     body, html {
+            font-family: 'Poppins', sans-serif;
+            background: #498eb9;
+            margin: 0;
+        }
+        .landing-container 
+        {
+            width: 100%;
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            overflow: hidden;
+        }
+
+        header, footer {
+            background-color: #25687e;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+ </style>
+<body>
+   
+
+    <!-- Welcome Section -->
+    <section style="text-align: center; margin: 50px 0;">
+        <h1>Welcome Friend!</h1>
+    </section>
+
+    <section style="padding: 50px 0; text-align: center; margin: 50px 0;">
+        <div class="landing-container" style="max-width: 380px; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); margin: 0 auto;">
+            <h2>Menu</h2>
+            <li><a href="{{ url_for('nutrition_diary')}}">Nutrition Search</a></li>
+            <li><a href="{{ url_for('nutrition_tracker')}}">Nutrition Diary</a></li>
+            <li><a href="{{ url_for('daily_intake')}}">Log Nutrition</a></li>
+            <li><a href="{{ url_for('progress')}}">Weight Progress</a></li>
+            <li><a href="{{ url_for('signin')}}">Sign Out</a></li>
+
+            {% if error %}
+                <p style="color: red; font-weight: bold;">{{ error }}</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <footer>
+        <p>FitWell Tracker &copy; 2023</p>
+    </footer>
+</body>
+
+</html>

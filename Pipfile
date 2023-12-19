@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+pymongo = "*"
+requests = "*"
+blinker = "*"
+certifi = "*"
+charset-normalizer = "*"
+click = "*"
+colorama = "*"
+dnspython = "*"
+idna = "*"
+itsdangerous = "*"
+jinja2 = "*"
+markupsafe = "*"
+urllib3 = "*"
+werkzeug = "*"
+app = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "*"

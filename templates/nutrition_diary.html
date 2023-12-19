@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nutrition Information</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            margin: auto;
+            overflow: hidden;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #008cba;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #006c8b;
+        }
+        #nutrition-results {
+            background-color: #e2e2e2;
+            padding: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .signout-button {
+    background-color: #f44336; /* Red color */
+    color: white;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+    
+.signout-button:hover {
+    background-color: #d32f2f; 
+}
+
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <h1>Nutrition Information</h1>
+        <form id="food-form">
+            <input type="text" id="food-item" placeholder="Enter food item" required>
+            <button type="button" id="get-nutrition">Get Nutrition Info</button>
+
+        </form>
+        
+        <div id="nutrition-results">
+            <h2>Results:</h2>
+            <p>Calories: <span id="calories">-</span></p>
+            <p>Protein (g): <span id="protein">-</span></p>
+            <p>Fat (g): <span id="fat">-</span></p>
+            <p>Carbohydrates (g): <span id="carbohydrates">-</span></p>
+            <!-- Add more fields as necessary -->
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#get-nutrition').on('click', function() {
+                var foodItem = $('#food-item').val();
+                $.ajax({
+                    method: 'POST',
+                    url: '/get-nutrition', // Make sure this matches your Flask route
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify({ 'food_item': foodItem }),
+                    dataType: 'json',
+                    success: function(response) {
+                        // Assuming the API returns an array of items and you want the first one
+                        if (response.items && response.items.length > 0) {
+                            var item = response.items[0];
+                            $('#calories').text(item.calories);
+                            $('#protein').text(item.protein_g);
+                            $('#fat').text(item.fat_total_g);
+                            $('#carbohydrates').text(item.carbohydrates_total_g);
+                            $('#nutrition-results').show();
+                        } else {
+                            alert('No nutritional data found for this food item.');
+                        }
+                    },
+                    error: function(error) {
+                        alert('Error retrieving nutrition data. Please try again.');
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

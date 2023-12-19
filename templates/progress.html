@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weight Progress - FitWell Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add the rest of your head section here, similar to your other HTML files -->
+
+
+    <style>
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <header>
+        <h1>Weight Progress</h1>
+    </header>
+
+    <div class="container">
+        <form method="POST" action="/progress">
+            <div class="form-group">
+                <label for="weight">Weight:</label>
+                <input type="number" id="weight" name="weight" required>
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <button type="submit">Add Entry</button>
+        </form>
+
+        <canvas id="weightChart"></canvas>
+    </div>
+
+    <script>
+        var weightLogs = {{ weight_logs | tojson | safe }};
+        var ctx = document.getElementById('weightChart').getContext('2d');
+        var weightChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: weightLogs.map(log => log.date),
+                datasets: [{
+                    label: 'Weight',
+                    data: weightLogs.map(log => log.weight),
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            }
+        });
+    </script>
+
+    <footer>
+        <p>FitWell Tracker &copy; 2023</p>
+    </footer>
+</body>
+</html>

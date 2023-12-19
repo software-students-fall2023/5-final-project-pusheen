@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily Intake - Nutrition Tracker</title>
+    <style>
+        body, html 
+        {
+            font-family: 'Poppins', sans-serif;
+            background:  #c698c2;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        .add-container 
+        {
+            width: 100%;
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            overflow: hidden;
+            align-items: center;
+        }
+
+        h1 
+        {
+            color: #333;
+        }
+
+
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="add-container">
+        <h1>Daily Intake</h1>
+        <a href="/add_breakfast">
+            <button style="background-color: #c698c2; color: white;">Add Breakfast</button>
+        </a>
+        <a href="/add_lunch">
+            <button style="background-color: #c698c2; color: white;">Add Lunch</button>
+        </a>
+        <a href="/add_dinner">
+            <button style="background-color: #c698c2; color: white;">Add Dinner</button>
+        </a>
+        <a href="/add_snack">
+            <button style="background-color: #c698c2; color: white;">Add Snack</button>
+        </a>
+    
+    </div>
+
+    <footer>
+        <p>FitWell Tracker &copy; 2023</p>
+    </footer>
+    
+</body>
+</html>
