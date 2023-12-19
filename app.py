@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from pymongo import MongoClient
-from bson.objectid import ObjectId  # Assuming you need it for MongoDB operations
+from bson.objectid import ObjectId  
 from werkzeug.security import generate_password_hash, check_password_hash
-import requests  # Assuming you need it for external API calls
+import requests  
 
 app = Flask(__name__)
 
