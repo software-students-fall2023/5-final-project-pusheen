@@ -1,7 +1,12 @@
+[![CI/CD](https://github.com/software-students-fall2023/5-final-project-pusheen/blob/main/.github/workflows/python-app-cicd.yml/badge.svg)](https://github.com/software-students-fall2023/5-final-project-pusheen/blob/main/.github/workflows/python-app-cicd.yml)
+
+
 # Final Project
+
 
 #Fitwell Tracker
 Fitwell Tracker is an nutrition tracker used for logging meals and keeping track of weight. The app helps people keep track of their diet and the meals they eat on an every day basis as well as seeing how these meals may affect their weight/health. This app is for personal use.
+
 
 
 # Team Members
@@ -10,9 +15,10 @@ Fitwell Tracker is an nutrition tracker used for logging meals and keeping track
 
 [Jazlene Darrisaw](https://github.com/Jazlene30)
 
-[Henry W](https://github.com/fishlesswater)
+[Henry Wang](https://github.com/fishlesswater)
 
 [Ahmed Omar](https://github.com/ahmed-o-324)
+
 
 
 # Setting Up
@@ -39,3 +45,7 @@ Fitwell Tracker is an nutrition tracker used for logging meals and keeping track
 
 # Digital Ocean - Deployed App
 - URL : http://143.198.4.193:5000/
+
+
+# Links to container image
+
