@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  web-app:
+    #build: .
+    image: alh8007/finalproject:latest
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    
+
+  mongodb:
+    image: mongo
+    mem_limit: 500m
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  mongodb-data:
+
+
+# docker build -t alh8007/finalproject . 
+# docker push alh8007/finalproject
+
+#building and pushing:
+# docker build -t alh8007/finalproject .
+# docker push alh8007/finalproject:latest
+ 

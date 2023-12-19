@@ -23,7 +23,7 @@
             padding: 30px 40px;
             border-radius: 8px;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-            margin: 60px auto;
+            margin: auto;
         }
 
         form 
@@ -46,7 +46,6 @@
 
 
     <nav>
-        <a href="#" class="logo"> Nutrifit </a>
         <ul>
             <li><a href="{{ url_for('landing')}}">Home</a></li>
         </ul>
@@ -59,24 +58,12 @@
      
             <section style="text-align: center; margin: 30px 0;">
             
-                <a href="add_weight.html" target="_blank">
-                    <button style="background-color: pink; color: white;">Add Weight</button>
-                </a>
-                <a href="add_water.html" target="_blank">
-                    <button style="background-color: pink; color: white;">Add Water</button>
-                </a>
-                <a href="add_breakfast.html" target="_blank">
-                    <button style="background-color: pink; color: white;">Add Breakfast</button>
-                </a>
-                <a href="add_lunch.html" target="_blank">
-                    <button style="background-color: pink; color: white;">Add Lunch</button>
-                </a>
-                <a href="add_dinner.html" target="_blank">
-                    <button style="background-color: pink; color: white;">Add Dinner</button>
-                </a>
-                <a href="add_snack.html" target="_blank">
-                    <button style="background-color: pink; color: white;">Add Snack</button>
-                </a>
+                
+                <a href="/add_breakfast">Add Breakfast</a>
+                <a href="/add_lunch">Add Lunch</a>
+                <a href="/add_dinner">Add Dinner</a>
+                <a href="/add_snack">Add Snack</a>
+               
             </section>
     
     </div>
