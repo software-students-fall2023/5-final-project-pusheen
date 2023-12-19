@@ -1,6 +1,6 @@
 [![CI/CD](https://github.com/software-students-fall2023/5-final-project-pusheen/blob/main/.github/workflows/python-app-cicd.yml/badge.svg)](https://github.com/software-students-fall2023/5-final-project-pusheen/blob/main/.github/workflows/python-app-cicd.yml)
 
-
+[![Python application CI/CD](https://github.com/software-students-fall2023/5-final-project-pusheen/actions/workflows/python-app-ci.yml/badge.svg)](https://github.com/software-students-fall2023/5-final-project-pusheen/actions/workflows/python-app-ci.yml)
 # Final Project
 
 
