@@ -19,6 +19,7 @@ jinja2 = "*"
 markupsafe = "*"
 urllib3 = "*"
 werkzeug = "*"
+app = "*"
 
 [dev-packages]
 
