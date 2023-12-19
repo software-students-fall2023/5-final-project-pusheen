@@ -1,14 +1,11 @@
-# .github/workflows/python-app.yml
-
-name: Python application CI
+name: Python application CI/CD
 
 on: [push, pull_request]
 
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
-
+    
     services:
       mongodb:
         image: mongo
@@ -26,17 +23,28 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.8' # Choose the Python version you need
+        python-version: '3.12' # Choose the Python version you need
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # If your tests require the database to be in a certain state, add steps here
-
     - name: Run tests
-      env:
-        MONGO_URI: mongodb://localhost:27017/test_db # replace 'test_db' with your database name
       run: |
         python -m pytest tests
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' # This ensures that deployment only happens on the main branch.
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Environment
+      run: |
+        docker-compose build
+        docker-compose up -d
+
+
