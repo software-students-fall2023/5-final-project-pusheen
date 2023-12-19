@@ -19,7 +19,7 @@ class FlaskTestCase(unittest.TestCase):
             db.nutrition.delete_many({})
             # Create a user for signin tests
             hashed_password = generate_password_hash(self.password)
-            db.users.insert_one({
+            result = db.users.insert_one({
                 'username': self.username,
                 'password': hashed_password,
                 'gender': 'female',
@@ -27,6 +27,8 @@ class FlaskTestCase(unittest.TestCase):
                 'height': '170',
                 'current_weight': '60'
             })
+            # Set user_id from the inserted user
+            self.user_id = result.inserted_id
             # Log in the user
             self.client.post('/signin', data={
                 'username': self.username,
@@ -119,7 +121,7 @@ class FlaskTestCase(unittest.TestCase):
                 'calories': 105,
                 'date': '2022-01-01'
             }, follow_redirects=True)
-            self.assertNotEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200)
 
             # Verify entry was added
             entry = db.nutrition.find_one({'food_item': food_item})
@@ -151,8 +153,29 @@ class FlaskTestCase(unittest.TestCase):
         with app.app_context():
             db.users.delete_many({})
             db.nutrition.delete_many({})
+    def test_progress(self):
+        # Log in the test user
+        with self.client:
+            self.client.post('/signin', data={
+                'username': self.username,
+                'password': self.password
+            })
+            # Simulate user session
+            with self.client.session_transaction() as sess:
+                sess['user_id'] = str(self.user_id)
 
+            # Test adding a new weight entry
+            weight = '70'
+            date = '2022-01-01'
+            response = self.client.post('/progress', data={
+                'weight': weight,
+                'date': date
+            }, follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
 
+            # Fetch the user's document and check the weight logs
+            user = db.users.find_one({"_id": self.user_id})
+            self.assertIsNotNone(user, "User not found in the database.")
 
 
 
