@@ -181,8 +181,6 @@ def progress():
         weight_logs = user.get("weight_logs", [])
     else:
         weight_logs = []
-        # You might also want to handle this situation more gracefully
-        # e.g., logging an error, showing a message to the user, etc.
 
     return render_template('progress.html', weight_logs=weight_logs)
 
