@@ -9,6 +9,17 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongo --eval 'db.runCommand({ping: 1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
     steps:
     - uses: actions/checkout@v2
 
@@ -22,9 +33,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # Add steps to set up your database here if needed
+    # If your tests require the database to be in a certain state, add steps here
 
     - name: Run tests
+      env:
+        MONGO_URI: mongodb://localhost:27017/test_db # replace 'test_db' with your database name
       run: |
-       python -m pytest tests
-
+        python -m pytest tests
