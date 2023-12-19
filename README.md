@@ -4,7 +4,6 @@
 # Final Project
 
 
-#Fitwell Tracker
 Fitwell Tracker is an nutrition tracker used for logging meals and keeping track of weight. The app helps people keep track of their diet and the meals they eat on an every day basis as well as seeing how these meals may affect their weight/health. This app is for personal use.
 
 
