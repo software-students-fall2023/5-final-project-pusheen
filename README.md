@@ -3,7 +3,10 @@
 
 # Final Project
 
-NutriFit is a handy tool that helps you keep track of what you eat and how much you weigh. It's like a food diary that also keeps an eye on your weight changes. With NutriFit, you can write down every meal and snack, and it'll tell you all about the calories and nutrition in your food. We also incorporated an api, where user can actively check the food's calorie and other information.
+
+#Fitwell Tracker
+Fitwell Tracker is an nutrition tracker used for logging meals and keeping track of weight. The app helps people keep track of their diet and the meals they eat on an every day basis as well as seeing how these meals may affect their weight/health. This app is for personal use.
+
 
 
 # Team Members
@@ -16,14 +19,33 @@ NutriFit is a handy tool that helps you keep track of what you eat and how much 
 
 [Ahmed Omar](https://github.com/ahmed-o-324)
 
-# Set Up in local environment
-We have composed everything needed in docker compose. To do that:
-1. Clone the repository 
-2. In the main directory, run ``` docker compose up ```
-3. Navigate to http://localhost:5000 to access the web app.
 
-# Digital Ocean 
-We have deployed this to digital ocean
-Go to [Here](http://143.198.4.193:5000/) to see our web app
+
+# Setting Up
+
+## Running Locally
+1. Clone the repository 
+2. run pip install --no-cache-dir -r requirements.txt
+3. run python app.py
+
+
+## Running with Docker (run the following commands)
+1. cd 5-final-project-pusheen
+2. git pull
+3. docker-compose pull
+4. docker-compose up
+
+## Running Tests
+1. pipenv install pytest
+2. run pytest
+3. pipenv install coverage.py
+4. run python -m coverage run -m pytest tests
+5. run python -m coverage report -m
+
+
+# Digital Ocean - Deployed App
+- URL : http://143.198.4.193:5000/
+
 
 # Links to container image
+

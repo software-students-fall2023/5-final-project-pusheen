@@ -123,10 +123,7 @@
 
 <body>
     <nav>
-        <a href="#" class="logo"> Nutrifit </a>
-        <ul>
-            <li><a href="{{ url_for('daily_intake')}}">Cancel</a></li>
-        </ul>
+        <a href="{{ url_for('daily_intake')}}">Cancel</a>
     </nav>
 
 
@@ -174,6 +171,10 @@
             {% endif %}
         </div>
     </section>
+
+    <footer>
+        <p>FitWell Tracker &copy; 2023</p>
+    </footer>
 </body>
 
 </html>
