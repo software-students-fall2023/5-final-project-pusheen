@@ -48,7 +48,10 @@ Fitwell Tracker is an nutrition tracker used for logging meals and keeping track
 
 # Links to container image
 
-Web app image: https://hub.docker.com/r/alh8007/finalproject
+
+Web app image: https://hub.docker.com/repository/docker/alh8007/
+finalproject/general
+
 
 
 Mongo image: https://hub.docker.com/_/mongo
