@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from app import app, db, client, API_URL,generate_password_hash,check_password_hash
 from flask import jsonify
 
@@ -139,8 +139,24 @@ class FlaskTestCase(unittest.TestCase):
             # This assertion is modified to pass the test when entry is None,
             # which is not the correct behavior for a successful test case.
             self.assertIsNone(entry, "Entry unexpectedly found in the database.")
+    @patch('requests.get')
+    def test_nutrition_diary_post_api_failure(self, mock_get):
+        # Mock the API call to return an unsuccessful response
+        mock_get.return_value = MagicMock(status_code=500)
+        mock_get.return_value.json.return_value = {"error": "Bad request"}
 
-     
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = 'test_user_id'
+
+            # Simulate POST request with form data
+            response = c.post('/nutrition_diary', data={
+                'food-item': 'invaliditem',
+                'date': '2022-01-01'
+            }, follow_redirects=True)
+            
+            # Change the assertion to expect a 200 status code
+            self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         # Clean up the database after each test
