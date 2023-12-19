@@ -1,8 +1,10 @@
+
 from flask import Flask, Request, render_template, request, redirect, url_for, session, jsonify
 from pymongo.server_api import ServerApi
 from pymongo import MongoClient
+from bson.objectid import ObjectId  
 from werkzeug.security import generate_password_hash, check_password_hash
-import requests
+import requests  
 
 
 app = Flask(__name__)
@@ -14,6 +16,7 @@ API_KEY = 'Mg32i8it134/WHBsJ/BNMw==VzPRDn8ISb0n1GPZ'
 app.secret_key = 'pusheen'
 
 # db conncetion 
+
 #uri = "mongodb+srv://Anjahebi:4fLrJVtnEIZPVzRv@pusheenswe.dblujvp.mongodb.net/?retryWrites=true&w=majority"
 # Create a new client and connect to the server
 #client = MongoClient(uri, server_api=ServerApi('1'))
@@ -22,7 +25,6 @@ client = MongoClient('mongodb+srv://Anjahebi:4fLrJVtnEIZPVzRv@pusheenswe.dblujvp
 
 # Send a ping to confirm a successful connection
 try:
-
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
@@ -35,6 +37,7 @@ users = db["UserData"]
 intake = db["DailyIntake"]
 
 
+user_id = None
 
 
 @app.route('/')
@@ -165,6 +168,29 @@ def get_nutrition():
     else:
         # Handle any error that occurred during the API call
         return jsonify({'error': 'Could not retrieve nutrition data'}), response.status_code
+
+@app.route('/progress', methods=['GET', 'POST'])
+def progress():
+    if 'user_id' not in session:
+        return redirect(url_for('signin'))
+
+    if request.method == 'POST':
+        weight = request.form.get("weight")
+        date = request.form.get("date")
+        weight_entry = {"date": date, "weight": weight}
+        
+        # Update the user's document with the new weight entry
+        db.users.update_one({"_id": ObjectId(session['user_id'])}, {"$push": {"weight_logs": weight_entry}})
+
+    user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+
+    # Check if the user is found
+    if user:
+        weight_logs = user.get("weight_logs", [])
+    else:
+        weight_logs = []
+
+    return render_template('progress.html', weight_logs=weight_logs)
 
 
 
