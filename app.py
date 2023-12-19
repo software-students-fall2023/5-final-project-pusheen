@@ -1,9 +1,8 @@
-
-from flask import Flask, render_template, request, redirect, url_for, session,jsonify
-
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from pymongo import MongoClient
+from bson.objectid import ObjectId  # Assuming you need it for MongoDB operations
 from werkzeug.security import generate_password_hash, check_password_hash
-import requests
+import requests  # Assuming you need it for external API calls
 
 app = Flask(__name__)
 
@@ -14,8 +13,24 @@ API_KEY = 'Mg32i8it134/WHBsJ/BNMw==VzPRDn8ISb0n1GPZ'
 app.secret_key = 'pusheen'
 
 # db conncetion 
-client = MongoClient("mongodb://localhost:27017/")
-db = client['fitness_app']
+client = MongoClient('mongodb+srv://Anjahebi:4fLrJVtnEIZPVzRv@pusheenswe.dblujvp.mongodb.net/?retryWrites=true&w=majority')
+
+#mongodb+srv://Anjahebi:4fLrJVtnEIZPVzRv@pusheenswe.dblujvp.mongodb.net/?retryWrites=true&w=majority
+
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
+
+db = client['HealthApp']
+
+
+users = db["UserData"]
+intake = db["DailyIntake"]
+
+
+user_id = None
 
 @app.route('/')
 def index():
@@ -145,6 +160,31 @@ def get_nutrition():
     else:
         # Handle any error that occurred during the API call
         return jsonify({'error': 'Could not retrieve nutrition data'}), response.status_code
+
+@app.route('/progress', methods=['GET', 'POST'])
+def progress():
+    if 'user_id' not in session:
+        return redirect(url_for('signin'))
+
+    if request.method == 'POST':
+        weight = request.form.get("weight")
+        date = request.form.get("date")
+        weight_entry = {"date": date, "weight": weight}
+        
+        # Update the user's document with the new weight entry
+        db.users.update_one({"_id": ObjectId(session['user_id'])}, {"$push": {"weight_logs": weight_entry}})
+
+    user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+
+    # Check if the user is found
+    if user:
+        weight_logs = user.get("weight_logs", [])
+    else:
+        weight_logs = []
+        # You might also want to handle this situation more gracefully
+        # e.g., logging an error, showing a message to the user, etc.
+
+    return render_template('progress.html', weight_logs=weight_logs)
 
 
 if __name__ == '__main__':
