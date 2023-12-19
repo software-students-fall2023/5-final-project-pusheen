@@ -1,0 +1,147 @@
+import unittest
+from unittest.mock import patch
+from app import app, db, client, API_URL,generate_password_hash,check_password_hash
+from flask import jsonify
+
+# Example configuration for the test database
+app.config['MONGO_URI'] = 'mongodb://localhost:27017/test_fitness_app'
+
+class FlaskTestCase(unittest.TestCase):
+    # Set up the test client and other test variables
+    def setUp(self):
+        self.client = app.test_client()
+        self.client.testing = True
+        self.username = 'testuser'
+        self.password = 'testpassword'
+        # Ensure the database is empty before each test
+        with app.app_context():
+            db.users.delete_many({})
+            db.nutrition.delete_many({})
+            # Create a user for signin tests
+            hashed_password = generate_password_hash(self.password)
+            db.users.insert_one({
+                'username': self.username,
+                'password': hashed_password,
+                'gender': 'female',
+                'dob': '1990-01-01',
+                'height': '170',
+                'current_weight': '60'
+            })
+            # Log in the user
+            self.client.post('/signin', data={
+                'username': self.username,
+                'password': self.password
+            })
+
+    def test_api_url_constant(self):
+        """
+        Test to ensure the API_URL has not been altered.
+        """
+        expected_url = 'https://api.calorieninjas.com/v1/nutrition?query='
+        self.assertEqual(API_URL, expected_url)
+    def test_index(self):
+        # Test the index route
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Welcome to FitWell Tracker', response.data)        
+    def test_signout(self):
+        # Signout relies on a user being in session. We'll need to log in a user first.
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = 'test_user_id'
+
+            # Now we can test signout
+            response = self.client.post('/signout', follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertNotIn(b'user_id', sess)    
+    def test_successful_signup(self):
+        # Test successful user registration
+        response = self.client.post('/signup', data={
+            'username': self.username,
+            'password': self.password,
+            'gender': 'female',
+            'dob': '1990-01-01',
+            'height': '170',
+            'current_weight': '60'
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        # Verify that the user was added to the database
+        user = db.users.find_one({'username': self.username})
+        self.assertIsNotNone(user)
+        # Verify that the password was correctly hashed
+        self.assertTrue(check_password_hash(user['password'], self.password))
+
+    def test_successful_signin(self):
+        # Test successful user sign in
+        response = self.client.post('/signin', data={
+            'username': self.username,
+            'password': self.password
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_unsuccessful_signin(self):
+        # Test sign in with wrong password
+        response = self.client.post('/signin', data={
+            'username': self.username,
+            'password': 'wrongpassword'
+        }, follow_redirects=True)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_nutrition_diary_get(self):
+        # Test retrieving nutrition diary entries
+        response = self.client.get('/nutrition_diary', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_nutrition_tracker_post(self):
+        # Test adding a new nutrition entry
+        food_item = 'banana'
+        response = self.client.post('/nutrition_tracker', data={
+            'food_item': food_item,
+            'calories': 105,
+            'date': '2022-01-01'
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        # Verify entry was added
+        entry = db.nutrition.find_one({'food_item': food_item})
+        self.assertIsNotNone(entry)
+        self.assertEqual(entry['calories'], 105)
+
+    @patch('requests.get')
+    def test_nutrition_tracker_post(self):
+        # Test adding a new nutrition entry
+        food_item = 'banana'
+        response = self.client.post('/nutrition_tracker', data={
+            'food_item': food_item,
+            'calories': 105,
+            'date': '2022-01-01'
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Verify entry was added - debugging output added
+        entry = db.nutrition.find_one({'food_item': food_item})
+
+        # The assertion checks
+        self.assertIsNotNone(entry, "Entry was not found in the database.")
+        self.assertEqual(entry['calories'], 105, "Calories do not match the inserted value.")
+
+
+
+    def tearDown(self):
+        # Clean up the database after each test
+        with app.app_context():
+            db.users.delete_many({})
+            db.nutrition.delete_many({})
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    unittest.main()
