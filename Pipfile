@@ -7,8 +7,20 @@ name = "pypi"
 flask = "*"
 pymongo = "*"
 requests = "*"
+blinker = "*"
+certifi = "*"
+charset-normalizer = "*"
+click = "*"
+colorama = "*"
+dnspython = "*"
+idna = "*"
+itsdangerous = "*"
+jinja2 = "*"
+markupsafe = "*"
+urllib3 = "*"
+werkzeug = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "*"

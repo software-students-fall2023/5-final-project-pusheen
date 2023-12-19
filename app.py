@@ -1,11 +1,10 @@
 
-from flask import Flask, render_template, request, redirect, url_for, session,jsonify
-from pymongo.mongo_client import MongoClient
+import json
+from flask import Flask, Request, render_template, request, redirect, url_for, session, jsonify
 from pymongo.server_api import ServerApi
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
-import requests
-from bson import ObjectId
+
 
 app = Flask(__name__)
 
@@ -16,17 +15,20 @@ API_KEY = 'Mg32i8it134/WHBsJ/BNMw==VzPRDn8ISb0n1GPZ'
 app.secret_key = 'pusheen'
 
 # db conncetion 
-uri = "mongodb+srv://Anjahebi:<password>@pusheenswe.dblujvp.mongodb.net/?retryWrites=true&w=majority"
+#uri = "mongodb+srv://Anjahebi:4fLrJVtnEIZPVzRv@pusheenswe.dblujvp.mongodb.net/?retryWrites=true&w=majority"
 # Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
+#client = MongoClient(uri, server_api=ServerApi('1'))
+
+client = MongoClient('mongodb+srv://Anjahebi:4fLrJVtnEIZPVzRv@pusheenswe.dblujvp.mongodb.net/?retryWrites=true&w=majority')
+
 # Send a ping to confirm a successful connection
 try:
+
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
     print(e)
 
-#client = MongoClient("mongodb://localhost:27017/")
 db = client['HealthApp']
 
 
@@ -34,11 +36,23 @@ users = db["UserData"]
 intake = db["DailyIntake"]
 
 
+user_id = None
+
 
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+
+@app.route('/landing', methods=['GET', 'POST'])
+def landing():
+    if 'user_id' not in session:
+        return redirect(url_for('signin'))  # Redirect to sign-in if not logged in
+
+    return render_template('landing.html')
+
 
 @app.route('/signout', methods=['POST'])
 def signout():
@@ -60,9 +74,10 @@ def signup():
             "height": request.form.get('height'),
             "current_weight": request.form.get('current_weight')
         }
-        db.users.insert_one(user_info)
-        return redirect(url_for('index'))
+        users.insert_one(user_info)
+        return redirect(url_for('landing'))
     return render_template('signup.html')
+
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -71,12 +86,12 @@ def signin():
         password = request.form.get('password')
         
         # finding user by user name 
-        user = db.users.find_one({"username": username})
+        user = users.find_one({"username": username})
         
 
         if user and check_password_hash(user['password'], password):
             session['user_id'] = str(user['_id'])  # Store user_id in session
-            return redirect(url_for('nutrition_tracker'))  # Redirect to Nutrition Diary
+            return redirect(url_for('landing'))  # Redirect to Nutrition Diary
 
         else:
             # Authentication failed
@@ -84,11 +99,10 @@ def signin():
 
     return render_template('signin.html')
 
+
 @app.route('/nutrition_tracker', methods=['GET', 'POST'])
 def nutrition_tracker():
-    if 'user_id' not in session:
-        return redirect(url_for('signin'))  # Redirect to sign-in if not logged in
-
+    
     if request.method == 'POST':
         entry = {
             "user_id": session['user_id'],
@@ -112,7 +126,7 @@ def nutrition_diary():
         food_item = request.form.get("food-item")
         
         # Make the API call
-        response = requests.get(
+        response = Request.get(
             f"{API_URL}?query={food_item}",
             headers={'X-Api-Key': API_KEY}
         )
@@ -139,8 +153,8 @@ def nutrition_diary():
             # Handle error from API
             print(f"Error: {response.status_code}, {response.text}")
     # historical data from MongoDB
-    entries = db.nutrition.find().sort("date", -1)  # Sort by date descending
-    return render_template('nutrition_diary.html', entries=entries)
+        entries = db.nutrition.find().sort("date", -1)  # Sort by date descending
+        return render_template('nutrition_diary.html', entries=entries)
 
     if 'user_id' not in session:
         return redirect(url_for('signin'))  # Redirect to sign-in if not logged in
@@ -169,105 +183,98 @@ def get_nutrition():
 
 @app.route('/daily_intake')
 def daily_intake():
-    user_id = session.get('user_id')
-    if not user_id:
-        # Not logged in, redirect to signin page
-        return redirect(url_for('signin'))
-
-    user_doc = users.find_one({"_id": ObjectId(user_id)})
-    if not user_doc:
-        # User not found, clear the session and redirect to login
-        session.clear()
-        return redirect(url_for('signin'))
     return render_template('daily_intake.html')
 
 
 @app.route('/add_weight', methods=['GET','POST'])
 def add_weight():
-    user_id = session.get('user_id')
     if request.method == 'POST':
-        weight = request.form.get('weight')
+        entry = {
+            "user_id": session['user_id'],
+            "weight": request.form.get("weight"),
+            "date": request.form.get("date")
+        }
+        intake.insert_one(entry)
 
-        if users.find_one({"_id": ObjectId(user_id)}):
-            intake.insert_one({
-            "weight": weight
-                })
-         
-        return redirect(url_for('index'))
-    return render_template('add_weight.html')
+    entries = intake.find({"user_id": session['user_id']}).sort("date", -1)
+    return render_template('add_weight.html', entries=entries)
 
 
 @app.route('/add_water', methods=['GET','POST'])
 def add_water():
-    user_id = session.get('user_id')
     if request.method == 'POST':
-        water = request.form.get('water')
+       if request.method == 'POST':
+        entry = {
+            "user_id": session['user_id'],
+            "drink-amount": request.form.get("drink-amount"),
+            "date": request.form.get("date")
+        }
+        intake.insert_one(entry)
 
-        if users.find_one({"_id": ObjectId(user_id)}):
-            intake.insert_one({
-                    "water": []
-                    })
-         
-        return redirect(url_for('index'))
-    return render_template('add_water.html')
+    entries = intake.find({"user_id": session['user_id']}).sort("date", -1)
+    return render_template('add_water.html', entries=entries)
 
 @app.route('/add_breakfast', methods=['GET','POST'])
 def add_breakfast():
-    user_id = session.get('user_id')
     if request.method == 'POST':
-        breakfast = request.form.get('breakfast')
+       if request.method == 'POST':
+        entry = {
+            "user_id": session['user_id'],
+            "food_item": request.form.get("food-item"),
+            "calories": request.form.get("calories"),
+            "date": request.form.get("date")
+        }
+        intake.insert_one(entry)
 
-        if users.find_one({"_id": ObjectId(user_id)}):
-            intake.insert_one({
-                    "breakfast": []
-                    })
-         
-        return redirect(url_for('index'))
-    return render_template('add_breakfast.html')
+    entries = intake.find({"user_id": session['user_id']}).sort("date", -1)
+    return render_template('add_breakfast.html', entries=entries)
+
 
 @app.route('/add_lunch', methods=['GET','POST'])
 def add_lunch():
-    user_id = session.get('user_id')
     if request.method == 'POST':
-        lunch = request.form.get('lunch')
+       if request.method == 'POST':
+        entry = {
+            "user_id": session['user_id'],
+            "food_item": request.form.get("food-item"),
+            "calories": request.form.get("calories"),
+            "date": request.form.get("date")
+        }
+        intake.insert_one(entry)
 
-        if users.find_one({"_id": ObjectId(user_id)}):
-            intake.insert_one({
-                    "lunch": []
-                    })
-         
-        return redirect(url_for('index'))
-    return render_template('add_lunch.html')
+        entries = intake.find({"user_id": session['user_id']}).sort("date", -1)
+        return render_template('add_lunch.html', entries=entries)
 
 @app.route('/add_dinner', methods=['GET','POST'])
 def add_dinner():
-    user_id = session.get('user_id')
     if request.method == 'POST':
-        dinner = request.form.get('dinner')
+       if request.method == 'POST':
+        entry = {
+            "user_id": session['user_id'],
+            "food_item": request.form.get("food-item"),
+            "calories": request.form.get("calories"),
+            "date": request.form.get("date")
+        }
+        intake.insert_one(entry)
 
-        if users.find_one({"_id": ObjectId(user_id)}):
-            intake.insert_one({
-                    "dinner": []
-                    })
-         
-        return redirect(url_for('index'))
-    return render_template('add_dinner.html')
+        entries = intake.find({"user_id": session['user_id']}).sort("date", -1)
+        return render_template('add_dinner.html', entries=entries)
 
 
 @app.route('/add_snack', methods=['GET','POST'])
 def add_snack():
-    user_id = session.get('user_id')
-    if request.method == 'POST':
-        snack = request.form.get('snack')
+     if request.method == 'POST':
+       if request.method == 'POST':
+        entry = {
+            "user_id": session['user_id'],
+            "food_item": request.form.get("food-item"),
+            "calories": request.form.get("calories"),
+            "date": request.form.get("date")
+        }
+        intake.insert_one(entry)
 
-        if users.find_one({"_id": ObjectId(user_id)}):
-            intake.insert_one({
-                    "snack": []
-                    })
-         
-        return redirect(url_for('index'))
-    return render_template('add_snack.html')
-
+        entries = intake.find({"user_id": session['user_id']}).sort("date", -1)
+        return render_template('add_snack.html', entries=entries)
 
 if __name__ == '__main__':
     app.run(debug=True)

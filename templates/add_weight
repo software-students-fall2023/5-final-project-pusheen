@@ -32,13 +32,32 @@
             overflow: hidden;
         }
 
-        h2 
-        {
-            margin-bottom: 25px;
-            font-weight: 600;
+        
+        header, footer {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
         }
-    
-        input[type="number"], input[type="date"] {
+
+        form {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"] {
             width: 100%;
             padding: 10px;
             margin: 5px 0 15px;
@@ -46,6 +65,7 @@
             box-sizing: border-box;
             border-radius: 4px;
         }
+
 
         input[type=submit] 
         {
@@ -66,6 +86,40 @@
         {
             background-color: #3682c9;
         }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
     </style>
 </head>
 
@@ -93,23 +147,21 @@
                     <input type="date" id="date" name="date" required>
                 </div>
                 <button type="submit">Add Entry</button>
-
+ 
             </form>
             <table>
                 <tr>
                     <th>Date</th>
-                    <th>Food Item</th>
-                    <th>Calories</th>
+                    <th>New Weight</th>
                 </tr>
                 {% for entry in entries %}
                 <tr>
                     <td>{{ entry['date'] }}</td>
-                    <td>{{ entry['food_item'] }}</td>
-                    <td>{{ entry['calories'] }}</td>
+                    <td>{{ entry['weight'] }}</td>
                 </tr>
                 {% endfor %}
             </table>
-            
+
             {% if error %}
                 <p style="color: red; font-weight: bold;">{{ error }}</p>
             {% endif %}

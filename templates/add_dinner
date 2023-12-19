@@ -18,11 +18,6 @@
             margin: 0;
         }
 
-        a {
-            transition: color 0.3s;
-            text-decoration: none;
-        }
-
         .add_dinner-container 
         {
             width: 100%;
@@ -34,24 +29,28 @@
             overflow: hidden;
         }
 
-
-        h2 {
-            margin-bottom: 25px;
-            font-weight: 600;
+        header, footer {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        form 
-        {
+        form {
             background: white;
             padding: 20px;
             margin-top: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
         }
 
         input[type="text"], input[type="number"], input[type="date"] {
@@ -83,6 +82,40 @@
         {
             background-color: #3682c9;
         }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
     </style>
 </head>
 
@@ -119,7 +152,7 @@
 
             <table>
                 <tr>
-                    <th>Date</th>
+                    <th>Date</th> 
                     <th>Food Item</th>
                     <th>Calories</th>
                 </tr>
@@ -131,7 +164,7 @@
                 </tr>
                 {% endfor %}
             </table>
-            
+
             {% if error %}
                 <p style="color: red; font-weight: bold;">{{ error }}</p>
             {% endif %}

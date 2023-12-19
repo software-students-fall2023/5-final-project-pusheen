@@ -29,17 +29,31 @@
             overflow: hidden;
         }
 
-        h2 {
-            margin-bottom: 25px;
-            font-weight: 600;
+        header, footer {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
+        form {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        input[type="number"], input[type="date"] {
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"] {
             width: 100%;
             padding: 10px;
             margin: 5px 0 15px;
@@ -47,6 +61,7 @@
             box-sizing: border-box;
             border-radius: 4px;
         }
+
 
         input[type=submit] 
         {
@@ -67,6 +82,40 @@
         {
             background-color: #3682c9;
         }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
     </style>
 </head>
 
@@ -86,12 +135,9 @@
             <form action="/add_water" method="POST" style="text-align: left;">
 
                 <div class="form-group">
-                    <label for="drink-item">Drink Item:</label>
-                    <input type="text" id="drink-item" name="drink-item" required>
+                    <label for="drink-amount">Water consumption (oz.):</label>
+                    <input type="number" id="drink-amount" name="drink-amount" required>
                 </div>
-                <div class="form-group">
-                    <label for="calories">Calories:</label>
-                    <input type="number" id="calories" name="calories" required>
                 </div>
                 <div class="form-group">
                     <label for="date">Date:</label>
@@ -104,18 +150,16 @@
             <table>
                 <tr>
                     <th>Date</th>
-                    <th>Food Item</th>
-                    <th>Calories</th>
+                    <th>Water Amount</th>
                 </tr>
                 {% for entry in entries %}
                 <tr>
                     <td>{{ entry['date'] }}</td>
-                    <td>{{ entry['food_item'] }}</td>
-                    <td>{{ entry['calories'] }}</td>
+                    <td>{{ entry['water_amount'] }}</td>
                 </tr>
                 {% endfor %}
             </table>
-            
+
             {% if error %}
                 <p style="color: red; font-weight: bold;">{{ error }}</p>
             {% endif %}
