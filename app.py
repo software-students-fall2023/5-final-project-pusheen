@@ -180,9 +180,9 @@ def progress():
         weight_entry = {"date": date, "weight": weight}
         
         # Update the user's document with the new weight entry
-        db.users.update_one({"_id": ObjectId(session['user_id'])}, {"$push": {"weight_logs": weight_entry}})
+        users.update_one({"_id": ObjectId(session['user_id'])}, {"$push": {"weight_logs": weight_entry}})
 
-    user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+    user = users.find_one({"_id": ObjectId(session['user_id'])})
 
     # Check if the user is found
     if user:
