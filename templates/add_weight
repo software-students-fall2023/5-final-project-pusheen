@@ -37,16 +37,14 @@
             margin-bottom: 25px;
             font-weight: 600;
         }
-
-        input[type=date], input[type=number] 
-        {
+    
+        input[type="number"], input[type="date"] {
             width: 100%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #ddd;
             box-sizing: border-box;
+            border-radius: 4px;
         }
 
         input[type=submit] 
@@ -86,10 +84,32 @@
             <h1>New Weight</h1>
             <form action="/add_weight" method="POST" style="text-align: left;">
 
-                <label for="weight">New Weight:</label>
-                New Weight: <input type="number" id="weight" name="weight"><br>
+                <div class="form-group">
+                    <label for="weight">New Weight:</label>
+                    <input type="number" id="weight" name="weight" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <button type="submit">Add Entry</button>
 
             </form>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Food Item</th>
+                    <th>Calories</th>
+                </tr>
+                {% for entry in entries %}
+                <tr>
+                    <td>{{ entry['date'] }}</td>
+                    <td>{{ entry['food_item'] }}</td>
+                    <td>{{ entry['calories'] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            
             {% if error %}
                 <p style="color: red; font-weight: bold;">{{ error }}</p>
             {% endif %}
